@@ -415,6 +415,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/separator3" />
 
+            <!-- Share with friends feature temporarily hidden
             <ImageView
                 android:id="@+id/imgShare"
                 android:layout_width="35dp"
@@ -466,6 +467,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/shareText"
                 app:tint="@color/colorAccent" />
+            -->
 
             <ImageView
                 android:id="@+id/imageIssue"
@@ -490,7 +492,7 @@
                 android:focusable="true"
                 app:layout_constraintEnd_toStartOf="@+id/switchIssue"
                 app:layout_constraintStart_toEndOf="@+id/imageIssue"
-                app:layout_constraintTop_toBottomOf="@+id/shareText">
+                app:layout_constraintTop_toBottomOf="@+id/tvHeading4">
 
                 <TextView
                     android:id="@+id/tvIssueTitle"

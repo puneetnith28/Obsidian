@@ -132,9 +132,9 @@ class HomeActivity : AppCompatActivity() {
             openAccessLogsScreen()
         }
 
-        serviceEnabledBinding.shareText.setOnClickListener {
-            this.openSharingScreen(HomeViewModel.SHARING_TEXT)
-        }
+//        serviceEnabledBinding.shareText.setOnClickListener {
+//            this.openSharingScreen(HomeViewModel.SHARING_TEXT)
+//        }
 
         serviceEnabledBinding.issueText.setOnClickListener {
             this.openBrowser(HomeViewModel.GITHUB_REPO)
