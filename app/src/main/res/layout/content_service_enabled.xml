@@ -170,6 +170,7 @@
                 app:layout_constraintTop_toBottomOf="@id/locationText"
                 android:layout_margin="16dp"/>
 
+            <!--
             <TextView
                 android:id="@+id/tvHeading2"
                 android:layout_width="wrap_content"
@@ -331,6 +332,7 @@
                 android:background="@color/grey100"
                 app:layout_constraintTop_toBottomOf="@id/settingsText"
                 android:layout_margin="16dp"/>
+            -->
 
             <TextView
                 android:id="@+id/tvHeading3"
@@ -340,7 +342,7 @@
                 android:layout_marginTop="16dp"
                 style="@style/SubtitleText"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/separator2" />
+                app:layout_constraintTop_toTopOf="@id/separator1" />
 
             <ImageView
                 android:id="@+id/imgLogs"
