@@ -115,17 +115,21 @@ class IndicatorService : AccessibilityService() {
         cameraCallback = object : AvailabilityCallback() {
             override fun onCameraAvailable(cameraId: String) {
                 super.onCameraAvailable(cameraId)
-                isCameraOn = false
-                hideCam()
-                dismissNotification()
+                if (isCameraOn) {
+                    isCameraOn = false
+                    hideCam()
+                    dismissNotification()
+                }
             }
 
             override fun onCameraUnavailable(cameraId: String) {
                 super.onCameraUnavailable(cameraId)
-                isCameraOn = true
-                showCam()
-                triggerVibration()
-                showNotification()
+                if (!isCameraOn) {
+                    isCameraOn = true
+                    showCam()
+                    triggerVibration()
+                    showNotification()
+                }
             }
         }
         return cameraCallback as AvailabilityCallback
@@ -135,14 +139,18 @@ class IndicatorService : AccessibilityService() {
         micCallback = object : AudioRecordingCallback() {
             override fun onRecordingConfigChanged(configs: List<AudioRecordingConfiguration>) {
                 if (configs.size > 0) {
-                    isMicOn = true
-                    showMic()
-                    triggerVibration()
-                    showNotification()
+                    if (!isMicOn) {
+                        isMicOn = true
+                        showMic()
+                        triggerVibration()
+                        showNotification()
+                    }
                 } else {
-                    isMicOn = false
-                    hideMic()
-                    dismissNotification()
+                    if (isMicOn) {
+                        isMicOn = false
+                        hideMic()
+                        dismissNotification()
+                    }
                 }
             }
         }
@@ -153,15 +161,19 @@ class IndicatorService : AccessibilityService() {
         locationCallback = object : GnssStatus.Callback() {
             override fun onStarted() {
                 super.onStarted()
-                isLocationOn = true
-                showLocation()
-                triggerVibration()
+                if (!isLocationOn) {
+                    isLocationOn = true
+                    showLocation()
+                    triggerVibration()
+                }
             }
 
             override fun onStopped() {
                 super.onStopped()
-                isLocationOn = false
-                hideLocation()
+                if (isLocationOn) {
+                    isLocationOn = false
+                    hideLocation()
+                }
             }
         }
         return locationCallback as GnssStatus.Callback
@@ -235,8 +247,7 @@ class IndicatorService : AccessibilityService() {
     }
 
     private fun isLogEligible(currentAppId: String): Boolean {
-        // For now, allow all logs to help diagnostic
-        return true
+        return currentAppId != BuildConfig.APPLICATION_ID
     }
 
     private fun showMic() {
