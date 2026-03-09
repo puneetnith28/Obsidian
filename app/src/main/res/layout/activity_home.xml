@@ -42,15 +42,28 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/mainSwitch"
+            <!-- MAIN HEADER CARD -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:fontFamily="@font/senbold"
-                android:text="Disabled"
-                android:textSize="18sp" />
+                android:layout_margin="16dp"
+                app:cardBackgroundColor="@color/colorPrimary"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp">
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/mainSwitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="24dp"
+                    android:paddingBottom="24dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:textColor="@android:color/white"
+                    android:fontFamily="@font/senbold"
+                    android:text="Disabled"
+                    android:textSize="20sp" />
+            </com.google.android.material.card.MaterialCardView>
 
             <include
                 android:id="@+id/content_service_disabled"
