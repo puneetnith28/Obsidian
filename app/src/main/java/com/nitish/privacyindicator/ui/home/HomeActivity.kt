@@ -1,7 +1,9 @@
 package com.nitish.privacyindicator.ui.home
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
@@ -10,6 +12,8 @@ import android.text.TextUtils.SimpleStringSplitter
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.nitish.privacyindicator.BuildConfig
 import com.nitish.privacyindicator.databinding.ActivityHomeBinding
@@ -75,9 +79,9 @@ class HomeActivity : AppCompatActivity() {
         })
 
         viewModel.indicatorForegroundColor.observe(this, {
-            binding.indicatorsLayout.ivCam.setViewTint(it)
-            binding.indicatorsLayout.ivMic.setViewTint(it)
-            binding.indicatorsLayout.ivLoc.setViewTint(it)
+            binding.indicatorsLayout.ivCam.setViewTint(viewModel.sharedPrefManager.cameraColor)
+            binding.indicatorsLayout.ivMic.setViewTint(viewModel.sharedPrefManager.micColor)
+            binding.indicatorsLayout.ivLoc.setViewTint(viewModel.sharedPrefManager.locationColor)
         })
     }
 
@@ -105,7 +109,20 @@ class HomeActivity : AppCompatActivity() {
         }
 
         serviceEnabledBinding.switchLocation.setOnCheckedChangeListener { button, isEnabled ->
-            viewModel.setLocationIndicatorStatus(isEnabled)
+            if (isEnabled) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    button.isChecked = false
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                        101
+                    )
+                } else {
+                    viewModel.setLocationIndicatorStatus(true)
+                }
+            } else {
+                viewModel.setLocationIndicatorStatus(false)
+            }
         }
 
 //        serviceEnabledBinding.switchVibration.setOnCheckedChangeListener { button, isEnabled ->
@@ -173,6 +190,19 @@ class HomeActivity : AppCompatActivity() {
 
     private fun openAccessLogsScreen() {
         this.goToActivity(AccessLogsActivity::class.java)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                serviceEnabledBinding.switchLocation.isChecked = true
+                viewModel.setLocationIndicatorStatus(true)
+            } else {
+                Toast.makeText(this, "Location permission is required", Toast.LENGTH_LONG).show()
+                serviceEnabledBinding.switchLocation.isChecked = false
+            }
+        }
     }
 
     override fun onResume() {

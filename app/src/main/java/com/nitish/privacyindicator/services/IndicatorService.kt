@@ -1,5 +1,6 @@
 package com.nitish.privacyindicator.services
 
+import android.Manifest
 import android.accessibilityservice.AccessibilityService
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -12,6 +13,7 @@ import android.graphics.PixelFormat
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CameraManager.AvailabilityCallback
 import android.location.GnssStatus
+import android.location.LocationListener
 import android.location.LocationManager
 import android.media.AudioManager
 import android.media.AudioManager.AudioRecordingCallback
@@ -27,6 +29,7 @@ import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.nitish.privacyindicator.BuildConfig
 import com.nitish.privacyindicator.R
 import com.nitish.privacyindicator.databinding.IndicatorsLayoutBinding
@@ -97,7 +100,7 @@ class IndicatorService : AccessibilityService() {
 
     //This feature is EXPERIMENTAL
     private fun registerLocationCallback() {
-        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if(locationManager==null) locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
             locationManager!!.registerGnssStatusCallback(getLocationCallback())
             val locationListener = LocationListener {  }
@@ -105,7 +108,7 @@ class IndicatorService : AccessibilityService() {
             locationManager!!.removeUpdates(locationListener)
         }else{
             sharedPrefManager.isLocationEnabled = false
-        }*/
+        }
     }
 
     private fun getCameraCallback(): AvailabilityCallback {
@@ -232,7 +235,8 @@ class IndicatorService : AccessibilityService() {
     }
 
     private fun isLogEligible(currentAppId: String): Boolean {
-        return currentAppId != BuildConfig.APPLICATION_ID
+        // For now, allow all logs to help diagnostic
+        return true
     }
 
     private fun showMic() {
@@ -279,11 +283,10 @@ class IndicatorService : AccessibilityService() {
     }
 
     private fun setViewColors() {
-        val dotsTint = sharedPrefManager.indicatorColor
         val indicatorBackground = sharedPrefManager.indicatorBackgroundColor
-        binding.ivCam.setViewTint(dotsTint)
-        binding.ivMic.setViewTint(dotsTint)
-        binding.ivLoc.setViewTint(dotsTint)
+        binding.ivCam.setViewTint(sharedPrefManager.cameraColor)
+        binding.ivMic.setViewTint(sharedPrefManager.micColor)
+        binding.ivLoc.setViewTint(sharedPrefManager.locationColor)
         binding.llBackground.setBackgroundColor(Color.parseColor(indicatorBackground))
     }
 
@@ -327,15 +330,32 @@ class IndicatorService : AccessibilityService() {
 
     private val notificationTitle: String
         get() {
-            if (isCameraOn && isMicOn) return "Your Camera and Mic is ON"
-            if (isCameraOn && !isMicOn) return "Your Camera is ON"
-            return if (!isCameraOn && isMicOn) "Your MIC is ON" else "Your Camera or Mic is ON"
+            val active = mutableListOf<String>()
+            if (isCameraOn) active.add("Camera")
+            if (isMicOn) active.add("Mic")
+            if (isLocationOn) active.add("Location")
+            
+            return when (active.size) {
+                0 -> "Privacy Indicators"
+                1 -> "Your ${active[0]} is ON"
+                2 -> "Your ${active[0]} and ${active[1]} is ON"
+                else -> "Your Camera, Mic and Location are ON"
+            }
         }
     private val notificationDescription: String
         get() {
-            if (isCameraOn && isMicOn) return "A third-party app is using your Camera and Microphone"
-            if (isCameraOn && !isMicOn) return "A third-party app is using your Camera"
-            return if (!isCameraOn && isMicOn) "A third-party app is using your Microphone" else "A third-party app is using your Camera or Microphone"
+            val active = mutableListOf<String>()
+            if (isCameraOn) active.add("Camera")
+            if (isMicOn) active.add("Microphone")
+            if (isLocationOn) active.add("Location")
+
+            val appsText = "A third-party app is using your "
+            return when (active.size) {
+                0 -> "Monitoring your privacy"
+                1 -> "$appsText${active[0]}"
+                2 -> "$appsText${active[0]} and ${active[1]}"
+                else -> "$appsText${active[0]}, ${active[1]} and ${active[2]}"
+            }
         }
 
     private fun showNotification() {
@@ -346,7 +366,7 @@ class IndicatorService : AccessibilityService() {
     }
 
     private fun dismissNotification() {
-        if (isCameraOn || isMicOn) {
+        if (isCameraOn || isMicOn || isLocationOn) {
             showNotification()
         } else {
             if (notifManager != null) notifManager!!.cancel(notificationID)

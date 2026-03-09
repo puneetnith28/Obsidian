@@ -9,7 +9,7 @@ import com.nitish.privacyindicator.models.IndicatorSize
 import com.nitish.privacyindicator.repository.SharedPrefManager
 
 class HomeViewModel(application: Application,
-                    private val sharedPrefManager: SharedPrefManager) : AndroidViewModel(application) {
+                    val sharedPrefManager: SharedPrefManager) : AndroidViewModel(application) {
 
     val cameraIndicatorStatus = MutableLiveData(sharedPrefManager.isCameraIndicatorEnabled)
 

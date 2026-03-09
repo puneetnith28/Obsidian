@@ -21,8 +21,14 @@ public class SharedPrefManager {
     private static final String INDICATOR_OPACITY = "INDICATOR_OPACITY";
     private static final String INDICATOR_POSITION = "INDICATOR_POSITION";
     private static final String INDICATOR_BACKGROUND_COLOR = "INDICATOR_BACKGROUND_COLOR";
+    private static final String CAMERA_COLOR = "CAMERA_COLOR";
+    private static final String MIC_COLOR = "MIC_COLOR";
+    private static final String LOCATION_COLOR = "LOCATION_COLOR";
 
     private static final String DEFAULT_INDICATOR_COLOR = "#3F51B5";
+    private static final String DEFAULT_CAMERA_COLOR = "#E91E63"; // Rose
+    private static final String DEFAULT_MIC_COLOR = "#3F51B5"; // Deep Indigo
+    private static final String DEFAULT_LOCATION_COLOR = "#2196F3"; // Blue
     private static final String DEFAULT_INDICATOR_BACKGROUND_COLOR = "#FFFFFF";
     private static final boolean DEFAULT_CAMERA_ENABLED = true;
     private static final boolean DEFAULT_MIC_ENABLED = true;
@@ -138,6 +144,30 @@ public class SharedPrefManager {
 
     public String getIndicatorBackgroundColor() {
         return getString(context, INDICATOR_BACKGROUND_COLOR, DEFAULT_INDICATOR_BACKGROUND_COLOR);
+    }
+
+    public void setCameraColor(String value) {
+        setString(context, CAMERA_COLOR, value);
+    }
+
+    public String getCameraColor() {
+        return getString(context, CAMERA_COLOR, DEFAULT_CAMERA_COLOR);
+    }
+
+    public void setMicColor(String value) {
+        setString(context, MIC_COLOR, value);
+    }
+
+    public String getMicColor() {
+        return getString(context, MIC_COLOR, DEFAULT_MIC_COLOR);
+    }
+
+    public void setLocationColor(String value) {
+        setString(context, LOCATION_COLOR, value);
+    }
+
+    public String getLocationColor() {
+        return getString(context, LOCATION_COLOR, DEFAULT_LOCATION_COLOR);
     }
 
     public void setIndicatorSize(IndicatorSize value) {
