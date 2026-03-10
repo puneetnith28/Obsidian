@@ -79,6 +79,23 @@ class HomeActivity : AppCompatActivity() {
             serviceEnabledBinding.switchAppInfo.isChecked = it
         })
 
+        viewModel.privacyHealthScore.observe(this, { score ->
+            serviceEnabledBinding.tvHealthScoreValue.text = score.toString()
+            when {
+                score >= 85 -> {
+                    serviceEnabledBinding.tvHealthScoreValue.setTextColor(Color.GREEN)
+                    serviceEnabledBinding.tvHealthScoreDesc.text = "Overall privacy is Excellent"
+                }
+                score >= 70 -> {
+                    serviceEnabledBinding.tvHealthScoreValue.setTextColor(Color.YELLOW)
+                    serviceEnabledBinding.tvHealthScoreDesc.text = "Overall privacy is Fair"
+                }
+                else -> {
+                    serviceEnabledBinding.tvHealthScoreValue.setTextColor(Color.RED)
+                    serviceEnabledBinding.tvHealthScoreDesc.text = "Overall privacy is Poor"
+                }
+            }
+        })
 
         viewModel.vibrationAlertStatus.observe(this, {
             serviceEnabledBinding.switchVibration.isChecked = it

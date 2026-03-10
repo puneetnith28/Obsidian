@@ -7,9 +7,40 @@ import com.nitish.privacyindicator.models.IndicatorOpacity
 import com.nitish.privacyindicator.models.IndicatorPosition
 import com.nitish.privacyindicator.models.IndicatorSize
 import com.nitish.privacyindicator.repository.SharedPrefManager
+import androidx.lifecycle.viewModelScope
+import com.nitish.privacyindicator.db.AccessLogsDatabase
+import com.nitish.privacyindicator.repository.AccessLogsRepo
+import kotlinx.coroutines.launch
 
 class HomeViewModel(application: Application,
                     val sharedPrefManager: SharedPrefManager) : AndroidViewModel(application) {
+
+    private val repo = AccessLogsRepo(AccessLogsDatabase(application))
+
+    val privacyHealthScore = MutableLiveData(100)
+    
+    init {
+        calculatePrivacyHealthScore()
+    }
+
+    private fun calculatePrivacyHealthScore() {
+        viewModelScope.launch {
+            val since = System.currentTimeMillis() - 24 * 60 * 60 * 1000 // Last 24 hours
+            val activities = repo.fetchRecentSuspiciousActivities(since)
+            var score = 100
+            for (activity in activities) {
+                when (activity.riskLevel) {
+                    "Critical" -> score -= 15
+                    "Tracking" -> score -= 15
+                    "High" -> score -= 10
+                    "Medium" -> score -= 5
+                    else -> score -= 2
+                }
+            }
+            if (score < 0) score = 0
+            privacyHealthScore.value = score
+        }
+    }
 
     val cameraIndicatorStatus = MutableLiveData(sharedPrefManager.isCameraIndicatorEnabled)
 
