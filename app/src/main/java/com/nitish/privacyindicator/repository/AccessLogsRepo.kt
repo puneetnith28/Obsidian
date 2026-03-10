@@ -12,10 +12,13 @@ class AccessLogsRepo(
 
     fun fetchAll() = db.getAccessLogsDao().getAllLogs()
 
-    suspend fun saveSuspiciousActivity(activity: com.nitish.privacyindicator.models.SuspiciousActivity) = 
+    suspend fun saveSuspiciousActivity(activity: com.nitish.privacyindicator.models.SuspiciousActivity) =
         db.getSuspiciousActivitiesDao().insert(activity)
 
     suspend fun clearSuspiciousActivities() = db.getSuspiciousActivitiesDao().clearAll()
 
     fun fetchAllSuspiciousActivities() = db.getSuspiciousActivitiesDao().getAllSuspiciousActivities()
+
+    suspend fun fetchRecentSuspiciousActivities(since: Long) =
+        db.getSuspiciousActivitiesDao().getActivitiesSince(since)
 }

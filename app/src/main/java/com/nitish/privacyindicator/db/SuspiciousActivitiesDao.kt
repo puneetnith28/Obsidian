@@ -16,6 +16,9 @@ interface SuspiciousActivitiesDao {
     @Query("SELECT * FROM suspicious_activities ORDER BY time DESC")
     fun getAllSuspiciousActivities(): LiveData<List<SuspiciousActivity>>
 
+    @Query("SELECT * FROM suspicious_activities WHERE time > :since ORDER BY time DESC")
+    suspend fun getActivitiesSince(since: Long): List<SuspiciousActivity>
+
     @Query("DELETE FROM suspicious_activities")
     suspend fun clearAll()
 }
