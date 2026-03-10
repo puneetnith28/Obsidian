@@ -204,6 +204,7 @@ class IndicatorService : AccessibilityService() {
                     isLocationOn = true
                     showLocation()
                     triggerVibration()
+                    showNotification()
                     checkLocationSuspicious()
                 }
             }
@@ -213,6 +214,7 @@ class IndicatorService : AccessibilityService() {
                 if (isLocationOn) {
                     isLocationOn = false
                     hideLocation()
+                    dismissNotification()
                 }
             }
         }
