@@ -24,6 +24,7 @@ public class SharedPrefManager {
     private static final String CAMERA_COLOR = "CAMERA_COLOR";
     private static final String MIC_COLOR = "MIC_COLOR";
     private static final String LOCATION_COLOR = "LOCATION_COLOR";
+    private static final String SUSPICIOUS_DETECTION_ENABLED = "SUSPICIOUS_DETECTION_ENABLED";
 
     private static final String DEFAULT_INDICATOR_COLOR = "#3F51B5";
     private static final String DEFAULT_CAMERA_COLOR = "#E91E63"; // Rose
@@ -35,6 +36,8 @@ public class SharedPrefManager {
     private static final boolean DEFAULT_LOC_ENABLED = false;
     private static final boolean DEFAULT_NOTIFICATION_ENABLED = false;
     private static final boolean DEFAULT_VIB_ENABLED = false;
+    private static final boolean DEFAULT_SUSPICIOUS_DETECTION_ENABLED = true;
+
     private static final String DEFAULT_INDICATOR_SIZE = IndicatorSize.M.name();
     private static final String DEFAULT_INDICATOR_OPACITY = IndicatorOpacity.EIGHTY.name();
     private static final String DEFAULT_INDICATOR_POSITION = IndicatorPosition.TOP_RIGHT.name();
@@ -128,6 +131,14 @@ public class SharedPrefManager {
 
     public boolean isVibrationEnabled() {
         return getBoolean(context, VIB_ENABLED, DEFAULT_VIB_ENABLED);
+    }
+
+    public boolean isSuspiciousDetectionEnabled() {
+        return getBoolean(context, SUSPICIOUS_DETECTION_ENABLED, DEFAULT_SUSPICIOUS_DETECTION_ENABLED);
+    }
+
+    public void setSuspiciousDetectionEnabled(boolean value) {
+        setBoolean(context, SUSPICIOUS_DETECTION_ENABLED, value);
     }
 
     public void setIndicatorColor(String value) {

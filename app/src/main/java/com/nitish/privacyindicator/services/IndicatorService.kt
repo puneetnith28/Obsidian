@@ -67,6 +67,12 @@ class IndicatorService : AccessibilityService() {
     private var isLocationOn = false
     private var currentAppId = BuildConfig.APPLICATION_ID
 
+    private val cameraAccessTimes = mutableMapOf<String, MutableList<Long>>()
+    private val micStartTimes = mutableMapOf<String, Long>()
+    private val lastLocationTimes = mutableMapOf<String, Long>()
+    private val locationViolationCount = mutableMapOf<String, Int>()
+    private val lastSuspiciousLogTime = mutableMapOf<String, Long>()
+
 
     override fun onCreate() {
         super.onCreate()
@@ -129,10 +135,27 @@ class IndicatorService : AccessibilityService() {
                     showCam()
                     triggerVibration()
                     showNotification()
+                    checkCameraSuspicious()
                 }
             }
         }
         return cameraCallback as AvailabilityCallback
+    }
+
+    private fun checkCameraSuspicious() {
+        if (!sharedPrefManager.isSuspiciousDetectionEnabled) return
+        val now = System.currentTimeMillis()
+        val hourAgo = now - 3600000
+        val times = cameraAccessTimes.getOrPut(currentAppId) { mutableListOf() }
+        times.add(now)
+        times.removeAll { it < hourAgo }
+
+        if (times.size > 5) {
+            saveSuspiciousActivity(
+                "Camera used > 5 times in 1 hr",
+                "High"
+            )
+        }
     }
 
     private fun getMicCallback(): AudioRecordingCallback {
@@ -144,17 +167,33 @@ class IndicatorService : AccessibilityService() {
                         showMic()
                         triggerVibration()
                         showNotification()
+                        micStartTimes[currentAppId] = System.currentTimeMillis()
                     }
                 } else {
                     if (isMicOn) {
                         isMicOn = false
                         hideMic()
                         dismissNotification()
+                        val startTime = micStartTimes[currentAppId] ?: 0L
+                        if (startTime > 0) {
+                            checkMicSuspicious(System.currentTimeMillis() - startTime)
+                            micStartTimes[currentAppId] = 0L
+                        }
                     }
                 }
             }
         }
         return micCallback as AudioRecordingCallback
+    }
+
+    private fun checkMicSuspicious(durationMs: Long) {
+        if (!sharedPrefManager.isSuspiciousDetectionEnabled) return
+        if (durationMs > 60000) {
+            saveSuspiciousActivity(
+                "Mic active > 60 sec",
+                "Critical"
+            )
+        }
     }
 
     private fun getLocationCallback(): GnssStatus.Callback {
@@ -165,6 +204,7 @@ class IndicatorService : AccessibilityService() {
                     isLocationOn = true
                     showLocation()
                     triggerVibration()
+                    checkLocationSuspicious()
                 }
             }
 
@@ -177,6 +217,45 @@ class IndicatorService : AccessibilityService() {
             }
         }
         return locationCallback as GnssStatus.Callback
+    }
+
+    private fun checkLocationSuspicious() {
+        if (!sharedPrefManager.isSuspiciousDetectionEnabled) return
+        val now = System.currentTimeMillis()
+        val lastTime = lastLocationTimes[currentAppId] ?: 0L
+        if (now - lastTime in 1..12000) { // Approx 10s interval
+            val count = (locationViolationCount[currentAppId] ?: 0) + 1
+            locationViolationCount[currentAppId] = count
+            if (count >= 3) {
+                saveSuspiciousActivity(
+                    "GPS accessed every 10 sec",
+                    "Tracking"
+                )
+                locationViolationCount[currentAppId] = 0
+            }
+        } else {
+            locationViolationCount[currentAppId] = 0
+        }
+        lastLocationTimes[currentAppId] = now
+    }
+
+    private fun saveSuspiciousActivity(description: String, riskLevel: String) {
+        val now = System.currentTimeMillis()
+        val key = "${currentAppId}_$description"
+        val lastTime = lastSuspiciousLogTime[key] ?: 0L
+        if (now - lastTime < 300000) return // Debounce 5 mins for same app/issue
+
+        val activity = com.nitish.privacyindicator.models.SuspiciousActivity(
+            time = now,
+            appId = currentAppId,
+            appName = getAppName(currentAppId),
+            description = description,
+            riskLevel = riskLevel
+        )
+        GlobalScope.launch(Dispatchers.IO) {
+            accessLogsRepo.saveSuspiciousActivity(activity)
+            lastSuspiciousLogTime[key] = now
+        }
     }
 
     private fun triggerVibration() {

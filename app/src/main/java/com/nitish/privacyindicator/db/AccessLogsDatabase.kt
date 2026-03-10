@@ -6,15 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.nitish.privacyindicator.models.AccessLog
+import com.nitish.privacyindicator.models.SuspiciousActivity
 
 @Database(
-        entities = [AccessLog::class],
-        version = 1
+        entities = [AccessLog::class, SuspiciousActivity::class],
+        version = 2
 )
 @TypeConverters(Converters::class)
 abstract class AccessLogsDatabase: RoomDatabase() {
 
     abstract fun getAccessLogsDao():AccessLogsDao
+    abstract fun getSuspiciousActivitiesDao(): SuspiciousActivitiesDao
 
     companion object {
         @Volatile
@@ -30,6 +32,7 @@ abstract class AccessLogsDatabase: RoomDatabase() {
                         context.applicationContext,
                         AccessLogsDatabase::class.java,
                         "access_logs_db.db"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
     }
 }

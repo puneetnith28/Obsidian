@@ -1,0 +1,21 @@
+package com.nitish.privacyindicator.db
+
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.nitish.privacyindicator.models.SuspiciousActivity
+
+@Dao
+interface SuspiciousActivitiesDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(activity: SuspiciousActivity): Long
+
+    @Query("SELECT * FROM suspicious_activities ORDER BY time DESC")
+    fun getAllSuspiciousActivities(): LiveData<List<SuspiciousActivity>>
+
+    @Query("DELETE FROM suspicious_activities")
+    suspend fun clearAll()
+}

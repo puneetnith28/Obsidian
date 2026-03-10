@@ -25,6 +25,7 @@ import com.nitish.privacyindicator.helpers.setViewTint
 import com.nitish.privacyindicator.services.IndicatorService
 import com.nitish.privacyindicator.repository.SharedPrefManager
 import com.nitish.privacyindicator.ui.logs.AccessLogsActivity
+import com.nitish.privacyindicator.ui.logs.SuspiciousLogsActivity
 
 
 class HomeActivity : AppCompatActivity() {
@@ -65,6 +66,11 @@ class HomeActivity : AppCompatActivity() {
             serviceEnabledBinding.switchLocation.isChecked = it
             binding.indicatorsLayout.ivLoc.visibility = if(it==true) View.VISIBLE else View.GONE
         })
+
+        viewModel.suspiciousDetectionStatus.observe(this, {
+            serviceEnabledBinding.switchSuspicious.isChecked = it
+        })
+
 
 //        viewModel.vibrationAlertStatus.observe(this, {
 //            serviceEnabledBinding.switchVibration.isChecked = it
@@ -149,6 +155,19 @@ class HomeActivity : AppCompatActivity() {
             openAccessLogsScreen()
         }
 
+        serviceEnabledBinding.switchSuspicious.setOnCheckedChangeListener { button, isEnabled ->
+            viewModel.setSuspiciousDetectionStatus(isEnabled)
+        }
+
+        serviceEnabledBinding.suspiciousText.setOnClickListener {
+            openSuspiciousLogsScreen()
+        }
+
+        serviceEnabledBinding.switchSuspiciousLogs.setOnClickListener {
+            openSuspiciousLogsScreen()
+        }
+
+
 //        serviceEnabledBinding.shareText.setOnClickListener {
 //            this.openSharingScreen(HomeViewModel.SHARING_TEXT)
 //        }
@@ -191,6 +210,11 @@ class HomeActivity : AppCompatActivity() {
     private fun openAccessLogsScreen() {
         this.goToActivity(AccessLogsActivity::class.java)
     }
+
+    private fun openSuspiciousLogsScreen() {
+        this.goToActivity(SuspiciousLogsActivity::class.java)
+    }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

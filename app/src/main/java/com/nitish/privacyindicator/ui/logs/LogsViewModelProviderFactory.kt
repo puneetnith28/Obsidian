@@ -11,6 +11,12 @@ class LogsViewModelProviderFactory(
 ): ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return AccessLogsViewModel(application, accessLogsRepo) as T
+        if (modelClass.isAssignableFrom(AccessLogsViewModel::class.java)) {
+            return AccessLogsViewModel(application, accessLogsRepo) as T
+        }
+        if (modelClass.isAssignableFrom(SuspiciousLogsViewModel::class.java)) {
+            return SuspiciousLogsViewModel(application, accessLogsRepo) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
