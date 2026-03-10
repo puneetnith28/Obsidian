@@ -151,6 +151,11 @@ class HomeActivity : AppCompatActivity() {
             openAccessLogsScreen()
         }
 
+        serviceEnabledBinding.whitelistText.setOnClickListener {
+            val intent = Intent(this, com.nitish.privacyindicator.ui.whitelist.WhitelistActivity::class.java)
+            startActivity(intent)
+        }
+
         serviceEnabledBinding.switchLogs.setOnClickListener {
             openAccessLogsScreen()
         }
