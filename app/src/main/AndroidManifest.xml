@@ -28,6 +28,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.logs.SuspiciousLogsActivity"
+            android:label="Suspicious Activities"
+            android:theme="@style/AppTheme"/>
+
         <service
             android:name=".services.IndicatorService"
             android:enabled="true"

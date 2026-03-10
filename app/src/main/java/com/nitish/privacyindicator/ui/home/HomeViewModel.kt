@@ -21,6 +21,9 @@ class HomeViewModel(application: Application,
 
     val notificationAlertStatus = MutableLiveData(sharedPrefManager.isNotificationEnabled)
 
+    val suspiciousDetectionStatus = MutableLiveData(sharedPrefManager.isSuspiciousDetectionEnabled)
+
+
     val indicatorForegroundColor = MutableLiveData(sharedPrefManager.indicatorColor)
 
     val indicatorBackgroundColor = MutableLiveData(sharedPrefManager.indicatorBackgroundColor)
@@ -55,6 +58,12 @@ class HomeViewModel(application: Application,
         sharedPrefManager.isNotificationEnabled = isEnabled
         notificationAlertStatus.value = isEnabled
     }
+
+    fun setSuspiciousDetectionStatus(isEnabled: Boolean) {
+        sharedPrefManager.setSuspiciousDetectionEnabled(isEnabled)
+        suspiciousDetectionStatus.value = isEnabled
+    }
+
 
     fun setIndicatorForegroundColor(color: String) {
         sharedPrefManager.indicatorColor = color
