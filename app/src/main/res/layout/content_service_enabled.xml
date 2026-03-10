@@ -66,15 +66,33 @@
                             android:textSize="14sp"
                             android:text="Based on last 24h of app activity." />
                     </LinearLayout>
-                    
-                    <TextView
-                        android:id="@+id/tvHealthScoreValue"
+                    <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="100"
-                        android:textColor="@color/colorAccent"
-                        android:fontFamily="@font/senbold"
-                        android:textSize="40sp" />
+                        android:layout_marginStart="16dp">
+
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/cp_health_score"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:progress="100"
+                            android:max="100"
+                            app:indicatorColor="@color/colorAccent"
+                            app:trackColor="#40FFFFFF"
+                            app:indicatorSize="72dp"
+                            app:trackThickness="6dp" />
+
+                        <TextView
+                            android:id="@+id/tvHealthScoreValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="100"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/senbold"
+                            android:textSize="24sp" />
+                    </FrameLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

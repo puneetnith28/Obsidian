@@ -81,6 +81,7 @@ class HomeActivity : AppCompatActivity() {
 
         viewModel.privacyHealthScore.observe(this, { score ->
             serviceEnabledBinding.tvHealthScoreValue.text = score.toString()
+            serviceEnabledBinding.cpHealthScore.progress = score
             when {
                 score >= 85 -> {
                     serviceEnabledBinding.tvHealthScoreValue.setTextColor(Color.GREEN)
