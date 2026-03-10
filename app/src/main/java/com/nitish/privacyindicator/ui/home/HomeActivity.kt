@@ -72,13 +72,13 @@ class HomeActivity : AppCompatActivity() {
         })
 
 
-//        viewModel.vibrationAlertStatus.observe(this, {
-//            serviceEnabledBinding.switchVibration.isChecked = it
-//        })
+        viewModel.vibrationAlertStatus.observe(this, {
+            serviceEnabledBinding.switchVibration.isChecked = it
+        })
 
-//        viewModel.notificationAlertStatus.observe(this, {
-//            serviceEnabledBinding.switchNotification.isChecked = it
-//        })
+        viewModel.notificationAlertStatus.observe(this, {
+            serviceEnabledBinding.switchNotification.isChecked = it
+        })
 
         viewModel.indicatorBackgroundColor.observe(this, {
             binding.indicatorsLayout.llBackground.setBackgroundColor(Color.parseColor(it))
@@ -131,21 +131,21 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-//        serviceEnabledBinding.switchVibration.setOnCheckedChangeListener { button, isEnabled ->
-//            viewModel.setVibrationAlertStatus(isEnabled)
-//        }
-//
-//        serviceEnabledBinding.switchNotification.setOnCheckedChangeListener { button, isEnabled ->
-//            viewModel.setNotificationAlertStatus(isEnabled)
-//        }
-//
-//        serviceEnabledBinding.settingsText.setOnClickListener {
-//            openCustomizationScreen()
-//        }
-//
-//        serviceEnabledBinding.switchSettings.setOnClickListener {
-//            openCustomizationScreen()
-//        }
+        serviceEnabledBinding.switchVibration.setOnCheckedChangeListener { button, isEnabled ->
+            viewModel.setVibrationAlertStatus(isEnabled)
+        }
+
+        serviceEnabledBinding.switchNotification.setOnCheckedChangeListener { button, isEnabled ->
+            viewModel.setNotificationAlertStatus(isEnabled)
+        }
+
+        serviceEnabledBinding.settingsText.setOnClickListener {
+            openCustomizationScreen()
+        }
+
+        serviceEnabledBinding.switchSettings.setOnClickListener {
+            openCustomizationScreen()
+        }
 
         serviceEnabledBinding.logsText.setOnClickListener {
             openAccessLogsScreen()
