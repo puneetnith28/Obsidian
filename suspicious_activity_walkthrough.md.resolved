@@ -1,0 +1,50 @@
+# Suspicious Activity Detection Walkthrough
+
+This document explains the technical logic used by the Obsidian app to detect and log suspicious privacy-related activities on your device.
+
+## Core Detection Rules
+
+The app monitors three primary sensors: Camera, Microphone, and GPS. Each has specific rules based on usage patterns that deviate from normal behavior.
+
+### 1. Camera Detection
+*   **Trigger Rule**: If the same app accesses the camera **more than 5 times within a single hour**.
+*   **Risk Level**: `High`
+*   **Reasoning**: While legitimate apps use the camera, frequent rapid-fire access in the background is a strong indicator of subtle tracking or unauthorized monitoring.
+
+### 2. Microphone Detection
+*   **Trigger Rule**: If an app keeps the microphone active for **more than 60 seconds** continuously.
+*   **Risk Level**: `Critical`
+*   **Reasoning**: Long-duration audio capture is often associated with eavesdropping or unauthorized recording of conversations. This is marked as Critical due to the high sensitivity of audio data.
+
+### 3. GPS (Location) Detection
+*   **Trigger Rule**: If an app requests location access at a high frequency (**every 10 seconds**) and does this **3 or more times** consecutively.
+*   **Risk Level**: `Tracking`
+*   **Reasoning**: Persistent, high-frequency location polling is a hallmark of real-time tracking apps. Legionnaire apps typically poll location at much longer intervals to save battery.
+
+---
+
+## Intelligent Logging Features
+
+To ensure the system is both useful and non-intrusive, we've implemented several advanced logging mechanisms:
+
+### Intelligent Debouncing
+To prevent your logs from being flooded with the same alert, the system uses a **5-minute debounce timer**.
+*   If an app triggers a specific rule (e.g., "Mic active > 60 sec"), it will be logged.
+*   The same app cannot trigger that exact same log again for the next **5 minutes**, even if the activity continues.
+
+### Risk Categorization
+Every detected activity is categorized to help you prioritize your review:
+*   🔴 **Critical**: Highest privacy risk (e.g., long-duration audio).
+*   🟠 **High**: Significant usage patterns that require attention (e.g., frequent camera use).
+*   🔵 **Tracking**: Continuous monitoring patterns (e.g., rapid GPS polling).
+
+### Data Persistence
+All detected activities are stored in a local, encrypted Room database on your device. This ensures:
+*   **Privacy**: Your logs never leave your device.
+*   **Reliability**: Logs are preserved even after device reboots.
+*   **Manageability**: You can clear all logs at any time from the "Suspicious Activities" dashboard.
+
+---
+
+## How it works under the hood
+The [IndicatorService](file:///c:/Users/Lenovo/OneDrive/Desktop/New%20folder%20%282%29/Obsidian/app/src/main/java/com/nitish/privacyindicator/services/IndicatorService.kt#49-531) (an Accessibility Service) listens to system-wide callbacks provided by Android's `CameraManager`, `AudioManager`, and `GnssStatus`. When a sensor becomes active, Obsidian starts a timer or increments a counter for the calling app. When the thresholds defined above are crossed, a [SuspiciousActivity](file:///c:/Users/Lenovo/OneDrive/Desktop/New%20folder%20%282%29/Obsidian/app/src/main/java/com/nitish/privacyindicator/models/SuspiciousActivity.kt#6-16) record is generated and saved.
