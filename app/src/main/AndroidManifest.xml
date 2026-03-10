@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.obsidian.aegis">
 
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
@@ -11,6 +12,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:allowBackup="true"
@@ -37,6 +41,11 @@
         <activity android:name=".ui.logs.SuspiciousLogsActivity"
             android:label="Suspicious Activities"
             android:theme="@style/AppTheme"/>
+
+        <activity android:name=".ui.risk.RiskActivity"
+            android:label="Risk Analysis"
+            android:theme="@style/AppTheme"
+            android:exported="false" />
 
         <service
             android:name=".services.IndicatorService"

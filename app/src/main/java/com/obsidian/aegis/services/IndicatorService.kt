@@ -60,6 +60,7 @@ class IndicatorService : AccessibilityService() {
     private lateinit var layoutParams: WindowManager.LayoutParams
     private lateinit var windowManager: WindowManager
     private lateinit var accessLogsRepo: AccessLogsRepo
+    private lateinit var usageStatsHelper: com.obsidian.aegis.helpers.UsageStatsHelper
     private val notification_channel_id = "PRIVACY_INDICATORS_NOTIFICATION"
     private var notifManager: NotificationManagerCompat? = null
     private var notificationBuilder: NotificationCompat.Builder? = null
@@ -82,6 +83,11 @@ class IndicatorService : AccessibilityService() {
     private val lastSuspiciousLogTime = mutableMapOf<String, Long>()
     private val appInfoHandler = android.os.Handler(android.os.Looper.getMainLooper())
 
+    private fun captureRealForegroundApp(): String {
+        return usageStatsHelper.getCurrentForegroundApp()
+            ?: rootInActiveWindow?.packageName?.toString()
+            ?: currentAppId
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -101,6 +107,7 @@ class IndicatorService : AccessibilityService() {
     private fun fetchData() {
         sharedPrefManager = SharedPrefManager.getInstance(applicationContext)
         accessLogsRepo = AccessLogsRepo(AccessLogsDatabase(this))
+        usageStatsHelper = com.obsidian.aegis.helpers.UsageStatsHelper(this)
     }
 
     private fun startCallBacks() {
@@ -148,13 +155,23 @@ class IndicatorService : AccessibilityService() {
                 super.onCameraUnavailable(cameraId)
                 if (!isCameraOn) {
                     isCameraOn = true
-                    activeCameraAppId = currentAppId
+                    activeCameraAppId = captureRealForegroundApp()
                     cameraStartTimes[activeCameraAppId!!] = System.currentTimeMillis()
                     showCam()
                     triggerVibration()
                     showNotification()
                     checkCameraSuspicious()
                     showAppInfoOnIndicator()
+                    
+                    appInfoHandler.postDelayed({
+                        if (isCameraOn) {
+                            val updatedApp = captureRealForegroundApp()
+                            if (activeCameraAppId != updatedApp) {
+                                activeCameraAppId = updatedApp
+                                showAppInfoOnIndicator()
+                            }
+                        }
+                    }, 1000)
                 }
             }
         }
@@ -185,12 +202,26 @@ class IndicatorService : AccessibilityService() {
                 if (configs.size > 0) {
                     if (!isMicOn) {
                         isMicOn = true
-                        activeMicAppId = currentAppId
+                        
+                        var micApp = captureRealForegroundApp()
+                        activeMicAppId = micApp
+                        
                         showMic()
                         triggerVibration()
                         showNotification()
                         micStartTimes[activeMicAppId!!] = System.currentTimeMillis()
                         showAppInfoOnIndicator()
+                        
+                        appInfoHandler.postDelayed({
+                            if (isMicOn) {
+                                val updatedApp = captureRealForegroundApp()
+                                if (activeMicAppId != updatedApp) {
+                                    activeMicAppId = updatedApp
+                                    showAppInfoOnIndicator()
+                                }
+                            }
+                        }, 1000)
+                        
                         if (sharedPrefManager.isSuspiciousDetectionEnabled) {
                             checkScreenOffSuspicious("Microphone")
                         }
@@ -231,13 +262,23 @@ class IndicatorService : AccessibilityService() {
                 super.onStarted()
                 if (!isLocationOn) {
                     isLocationOn = true
-                    activeLocationAppId = currentAppId
+                    activeLocationAppId = captureRealForegroundApp()
                     locationStartTimes[activeLocationAppId!!] = System.currentTimeMillis()
                     showLocation()
                     triggerVibration()
                     showNotification()
                     checkLocationSuspicious()
                     showAppInfoOnIndicator()
+                    
+                    appInfoHandler.postDelayed({
+                        if (isLocationOn) {
+                            val updatedApp = captureRealForegroundApp()
+                            if (activeLocationAppId != updatedApp) {
+                                activeLocationAppId = updatedApp
+                                showAppInfoOnIndicator()
+                            }
+                        }
+                    }, 1000)
                 }
             }
 
