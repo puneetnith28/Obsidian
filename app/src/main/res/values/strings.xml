@@ -10,8 +10,8 @@
 
     <string name="notification_alert_summary">You will get an active notification on the status bar while an app is using your camera or microphone.</string>
 
-    <string name="indicators_disabled_description">Click on the above Switch and Turn on the Privacy Indicator in the Accessibility Settings</string>
-    <string name="privacy_indicators_disabled_title">Privacy Indicators are disabled</string>
+    <string name="indicators_disabled_description">Click on the above Switch and Turn on the Aegis in the Accessibility Settings</string>
+    <string name="privacy_indicators_disabled_title">Aegiss are disabled</string>
 
     <string name="camera_indicator_title">Camera Indicator</string>
     <string name="camera_indicator_description">This feature toggle will enable Camera Indicator which will notify you every time when a third-party app or service tried to access your Camera Hardware.</string>

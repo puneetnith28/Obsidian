@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="com.nitish.privacyindicator.ui.AppBarFragment"
+        android:name="com.obsidian.aegis.ui.AppBarFragment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"

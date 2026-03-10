@@ -8,7 +8,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/tvNitish"
+        android:id="@+id/tvObsidian"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -33,7 +33,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvNitish" />
+        app:layout_constraintTop_toBottomOf="@+id/tvObsidian" />
 
     <ImageView
         android:id="@+id/imgGithub"
@@ -47,7 +47,7 @@
         android:focusable="true"
         app:tint="@color/blackSecondary"
         app:layout_constraintEnd_toStartOf="@+id/imgLinkedIn"
-        app:layout_constraintStart_toStartOf="@+id/tvNitish"
+        app:layout_constraintStart_toStartOf="@+id/tvObsidian"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/github" />
 
@@ -62,7 +62,7 @@
         android:clickable="true"
         android:focusable="true"
         app:tint="@color/blackSecondary"
-        app:layout_constraintEnd_toEndOf="@+id/tvNitish"
+        app:layout_constraintEnd_toEndOf="@+id/tvObsidian"
         app:layout_constraintStart_toEndOf="@+id/imgGithub"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/linedin" />
