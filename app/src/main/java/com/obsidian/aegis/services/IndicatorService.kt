@@ -69,9 +69,15 @@ class IndicatorService : AccessibilityService() {
     private var isLocationOn = false
     private var currentAppId = BuildConfig.APPLICATION_ID
 
+    private var activeCameraAppId: String? = null
+    private var activeMicAppId: String? = null
+    private var activeLocationAppId: String? = null
+
     private val cameraAccessTimes = mutableMapOf<String, MutableList<Long>>()
     private val micStartTimes = mutableMapOf<String, Long>()
     private val lastLocationTimes = mutableMapOf<String, Long>()
+    private val locationStartTimes = mutableMapOf<String, Long>()
+    private val cameraStartTimes = mutableMapOf<String, Long>()
     private val locationViolationCount = mutableMapOf<String, Int>()
     private val lastSuspiciousLogTime = mutableMapOf<String, Long>()
     private val appInfoHandler = android.os.Handler(android.os.Looper.getMainLooper())
@@ -126,6 +132,13 @@ class IndicatorService : AccessibilityService() {
                 super.onCameraAvailable(cameraId)
                 if (isCameraOn) {
                     isCameraOn = false
+                    val app = activeCameraAppId ?: currentAppId
+                    val startTime = cameraStartTimes[app] ?: 0L
+                    if (startTime > 0) {
+                        makeLog(IndicatorType.CAMERA, startTime, System.currentTimeMillis(), app)
+                        cameraStartTimes[app] = 0L
+                    }
+                    activeCameraAppId = null
                     hideCam()
                     dismissNotification()
                 }
@@ -135,6 +148,8 @@ class IndicatorService : AccessibilityService() {
                 super.onCameraUnavailable(cameraId)
                 if (!isCameraOn) {
                     isCameraOn = true
+                    activeCameraAppId = currentAppId
+                    cameraStartTimes[activeCameraAppId!!] = System.currentTimeMillis()
                     showCam()
                     triggerVibration()
                     showNotification()
@@ -170,10 +185,11 @@ class IndicatorService : AccessibilityService() {
                 if (configs.size > 0) {
                     if (!isMicOn) {
                         isMicOn = true
+                        activeMicAppId = currentAppId
                         showMic()
                         triggerVibration()
                         showNotification()
-                        micStartTimes[currentAppId] = System.currentTimeMillis()
+                        micStartTimes[activeMicAppId!!] = System.currentTimeMillis()
                         showAppInfoOnIndicator()
                         if (sharedPrefManager.isSuspiciousDetectionEnabled) {
                             checkScreenOffSuspicious("Microphone")
@@ -184,11 +200,14 @@ class IndicatorService : AccessibilityService() {
                         isMicOn = false
                         hideMic()
                         dismissNotification()
-                        val startTime = micStartTimes[currentAppId] ?: 0L
+                        val app = activeMicAppId ?: currentAppId
+                        val startTime = micStartTimes[app] ?: 0L
                         if (startTime > 0) {
+                            makeLog(IndicatorType.MICROPHONE, startTime, System.currentTimeMillis(), app)
                             checkMicSuspicious(System.currentTimeMillis() - startTime)
-                            micStartTimes[currentAppId] = 0L
+                            micStartTimes[app] = 0L
                         }
+                        activeMicAppId = null
                     }
                 }
             }
@@ -212,6 +231,8 @@ class IndicatorService : AccessibilityService() {
                 super.onStarted()
                 if (!isLocationOn) {
                     isLocationOn = true
+                    activeLocationAppId = currentAppId
+                    locationStartTimes[activeLocationAppId!!] = System.currentTimeMillis()
                     showLocation()
                     triggerVibration()
                     showNotification()
@@ -224,6 +245,13 @@ class IndicatorService : AccessibilityService() {
                 super.onStopped()
                 if (isLocationOn) {
                     isLocationOn = false
+                    val app = activeLocationAppId ?: currentAppId
+                    val startTime = locationStartTimes[app] ?: 0L
+                    if (startTime > 0) {
+                        makeLog(IndicatorType.LOCATION, startTime, System.currentTimeMillis(), app)
+                        locationStartTimes[app] = 0L
+                    }
+                    activeLocationAppId = null
                     hideLocation()
                     dismissNotification()
                 }
@@ -259,9 +287,26 @@ class IndicatorService : AccessibilityService() {
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
         if (!powerManager.isInteractive) {
             saveSuspiciousActivity("$sensor accessed while screen was off", "Critical")
+            showScreenOffAlertNotification(sensor, getAppName(currentAppId))
             return true
         }
         return false
+    }
+
+    private fun showScreenOffAlertNotification(sensor: String, appName: String) {
+        if (!sharedPrefManager.isNotificationEnabled) return
+        createNotificationChannel()
+        val alertBuilder = NotificationCompat.Builder(applicationContext, notification_channel_id)
+            .setSmallIcon(R.drawable.camera_indicator2)
+            .setContentTitle("⚠️ Spyware Alert: $sensor Accessed!")
+            .setContentText("$appName accessed your $sensor while the screen was off.")
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setColor(Color.RED)
+            
+        NotificationManagerCompat.from(applicationContext).notify(Math.random().toInt(), alertBuilder.build())
     }
 
     private fun showAppInfoOnIndicator() {
@@ -370,9 +415,10 @@ class IndicatorService : AccessibilityService() {
     private val layoutGravity: Int
         get() = sharedPrefManager.indicatorPosition.layoutGravity
 
-    private fun makeLog(indicatorType: IndicatorType) {
-        if (isLogEligible(currentAppId)) {
-            val log = AccessLog(System.currentTimeMillis(), currentAppId, getAppName(currentAppId), indicatorType)
+    private fun makeLog(indicatorType: IndicatorType, startTime: Long, stopTime: Long, appId: String) {
+        if (isLogEligible(appId)) {
+            val durationMs = stopTime - startTime
+            val log = AccessLog(startTime, durationMs, appId, getAppName(appId), indicatorType)
             GlobalScope.launch(Dispatchers.IO) {
                 accessLogsRepo.save(log)
             }
@@ -396,7 +442,6 @@ class IndicatorService : AccessibilityService() {
         if (sharedPrefManager.isMicIndicatorEnabled) {
             updateIndicatorProperties()
             binding.ivMic.visibility = View.VISIBLE
-            makeLog(IndicatorType.MICROPHONE)
         }
     }
 
@@ -408,7 +453,6 @@ class IndicatorService : AccessibilityService() {
         if (sharedPrefManager.isCameraIndicatorEnabled) {
             updateIndicatorProperties()
             binding.ivCam.visibility = View.VISIBLE
-            makeLog(IndicatorType.CAMERA)
         }
     }
 
@@ -420,7 +464,6 @@ class IndicatorService : AccessibilityService() {
         if (sharedPrefManager.isLocationEnabled) {
             updateIndicatorProperties()
             binding.ivLoc.visibility = View.VISIBLE
-            makeLog(IndicatorType.LOCATION)
         }
     }
 
@@ -489,7 +532,7 @@ class IndicatorService : AccessibilityService() {
             if (isLocationOn) active.add("Location")
             
             return when (active.size) {
-                0 -> "Aegiss"
+                0 -> "Aegis"
                 1 -> "Your ${active[0]} is ON"
                 2 -> "Your ${active[0]} and ${active[1]} is ON"
                 else -> "Your Camera, Mic and Location are ON"
@@ -538,7 +581,7 @@ class IndicatorService : AccessibilityService() {
         }
 
     private fun createNotificationChannel() {
-        val notificationChannel = "Notifications for Aegiss"
+        val notificationChannel = "Notifications for Aegis"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_LOW
             val channel = NotificationChannel(notification_channel_id, notificationChannel, importance)

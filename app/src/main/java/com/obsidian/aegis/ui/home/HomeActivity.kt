@@ -230,9 +230,9 @@ class HomeActivity : AppCompatActivity() {
 
     private fun openAccessibilitySettingsPage(isServiceDisabled:Boolean) {
         if (isServiceDisabled){
-            Toast.makeText(this, "Turn On Aegiss", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Turn On Aegis", Toast.LENGTH_LONG).show()
         }else{
-            Toast.makeText(this, "Turn Off Aegiss", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Turn Off Aegis", Toast.LENGTH_LONG).show()
         }
         startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
     }

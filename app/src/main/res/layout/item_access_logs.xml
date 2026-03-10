@@ -65,6 +65,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="com.app.pakagename" />
+
+        <TextView
+            android:id="@+id/tvDuration"
+            style="@style/SubHeadingText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:text="Duration: 10s" />
     </LinearLayout>
 
     <LinearLayout

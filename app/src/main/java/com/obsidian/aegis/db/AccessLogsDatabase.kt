@@ -10,7 +10,7 @@ import com.obsidian.aegis.models.SuspiciousActivity
 
 @Database(
         entities = [AccessLog::class, SuspiciousActivity::class],
-        version = 3
+        version = 4
 )
 @TypeConverters(Converters::class)
 abstract class AccessLogsDatabase: RoomDatabase() {
