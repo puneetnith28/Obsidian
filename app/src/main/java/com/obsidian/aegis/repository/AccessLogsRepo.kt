@@ -12,6 +12,14 @@ class AccessLogsRepo(
 
     fun fetchAll() = db.getAccessLogsDao().getAllLogs()
 
+    suspend fun getSensorDurationForAppSince(appId: String, since: Long): Long {
+        return db.getAccessLogsDao().getSensorDurationForAppSince(appId, since) ?: 0L
+    }
+
+    suspend fun getLogsForAppSince(appId: String, since: Long): List<com.obsidian.aegis.models.AccessLog> {
+        return db.getAccessLogsDao().getLogsForAppSince(appId, since)
+    }
+
     suspend fun saveSuspiciousActivity(activity: com.obsidian.aegis.models.SuspiciousActivity) =
         db.getSuspiciousActivitiesDao().insert(activity)
 

@@ -74,4 +74,7 @@ dependencies {
 
     //Multi Switch Button
     implementation 'lib.kingja.switchbutton:switchbutton:1.1.8'
+
+    // MPAndroidChart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }

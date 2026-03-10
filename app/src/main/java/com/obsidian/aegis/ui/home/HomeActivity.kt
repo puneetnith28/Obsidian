@@ -206,6 +206,10 @@ class HomeActivity : AppCompatActivity() {
             openSuspiciousLogsScreen()
         }
 
+        serviceEnabledBinding.riskText.setOnClickListener {
+            openRiskAnalysisScreen()
+        }
+
 
 //        serviceEnabledBinding.shareText.setOnClickListener {
 //            this.openSharingScreen(HomeViewModel.SHARING_TEXT)
@@ -252,6 +256,10 @@ class HomeActivity : AppCompatActivity() {
 
     private fun openSuspiciousLogsScreen() {
         this.goToActivity(SuspiciousLogsActivity::class.java)
+    }
+
+    private fun openRiskAnalysisScreen() {
+        this.goToActivity(com.obsidian.aegis.ui.risk.RiskActivity::class.java)
     }
 
 
