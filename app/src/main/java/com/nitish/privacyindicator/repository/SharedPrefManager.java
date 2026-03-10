@@ -29,6 +29,7 @@ public class SharedPrefManager {
     private static final String LOCATION_COLOR = "LOCATION_COLOR";
     private static final String SUSPICIOUS_DETECTION_ENABLED = "SUSPICIOUS_DETECTION_ENABLED";
     private static final String SCREEN_OFF_MONITORING_ENABLED = "SCREEN_OFF_MONITORING_ENABLED";
+    private static final String SHOW_APP_INFO_ON_INDICATOR = "SHOW_APP_INFO_ON_INDICATOR";
     private static final String WHITELISTED_APPS = "WHITELISTED_APPS";
 
     private static final String DEFAULT_INDICATOR_COLOR = "#3F51B5";
@@ -43,6 +44,7 @@ public class SharedPrefManager {
     private static final boolean DEFAULT_VIB_ENABLED = false;
     private static final boolean DEFAULT_SUSPICIOUS_DETECTION_ENABLED = true;
     private static final boolean DEFAULT_SCREEN_OFF_MONITORING_ENABLED = true;
+    private static final boolean DEFAULT_SHOW_APP_INFO_ON_INDICATOR = true;
 
     private static final String DEFAULT_INDICATOR_SIZE = IndicatorSize.M.name();
     private static final String DEFAULT_INDICATOR_OPACITY = IndicatorOpacity.EIGHTY.name();
@@ -153,6 +155,14 @@ public class SharedPrefManager {
 
     public void setScreenOffMonitoringEnabled(boolean value) {
         setBoolean(context, SCREEN_OFF_MONITORING_ENABLED, value);
+    }
+
+    public boolean isShowAppInfoOnIndicator() {
+        return getBoolean(context, SHOW_APP_INFO_ON_INDICATOR, DEFAULT_SHOW_APP_INFO_ON_INDICATOR);
+    }
+
+    public void setShowAppInfoOnIndicator(boolean value) {
+        setBoolean(context, SHOW_APP_INFO_ON_INDICATOR, value);
     }
 
     public void setIndicatorColor(String value) {

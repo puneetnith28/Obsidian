@@ -45,4 +45,7 @@
 
     <string name="screen_off_monitoring_title">Screen-Off Monitoring</string>
     <string name="screen_off_monitoring_description">Escalate alerts if sensors are accessed while the screen is off (Detect Spyware).</string>
+
+    <string name="app_info_indicator_title">Show App Info on Indicator</string>
+    <string name="app_info_indicator_description">Briefly show the icon and name of the app accessing your camera, mic, or location on the overlay.</string>
 </resources>
