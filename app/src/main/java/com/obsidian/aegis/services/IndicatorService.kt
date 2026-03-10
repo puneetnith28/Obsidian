@@ -148,6 +148,8 @@ class IndicatorService : AccessibilityService() {
 
     private fun checkCameraSuspicious() {
         if (!sharedPrefManager.isSuspiciousDetectionEnabled) return
+        if (checkScreenOffSuspicious("Camera")) return
+        
         val now = System.currentTimeMillis()
         val hourAgo = now - 3600000
         val times = cameraAccessTimes.getOrPut(currentAppId) { mutableListOf() }
@@ -173,6 +175,9 @@ class IndicatorService : AccessibilityService() {
                         showNotification()
                         micStartTimes[currentAppId] = System.currentTimeMillis()
                         showAppInfoOnIndicator()
+                        if (sharedPrefManager.isSuspiciousDetectionEnabled) {
+                            checkScreenOffSuspicious("Microphone")
+                        }
                     }
                 } else {
                     if (isMicOn) {
@@ -229,6 +234,8 @@ class IndicatorService : AccessibilityService() {
 
     private fun checkLocationSuspicious() {
         if (!sharedPrefManager.isSuspiciousDetectionEnabled) return
+        if (checkScreenOffSuspicious("Location")) return
+        
         val now = System.currentTimeMillis()
         val lastTime = lastLocationTimes[currentAppId] ?: 0L
         if (now - lastTime in 1..12000) { // Approx 10s interval
@@ -245,6 +252,16 @@ class IndicatorService : AccessibilityService() {
             locationViolationCount[currentAppId] = 0
         }
         lastLocationTimes[currentAppId] = now
+    }
+
+    private fun checkScreenOffSuspicious(sensor: String): Boolean {
+        if (!sharedPrefManager.isScreenOffMonitoringEnabled()) return false
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (!powerManager.isInteractive) {
+            saveSuspiciousActivity("$sensor accessed while screen was off", "Critical")
+            return true
+        }
+        return false
     }
 
     private fun showAppInfoOnIndicator() {
