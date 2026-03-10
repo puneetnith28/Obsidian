@@ -43,6 +43,7 @@ class SuspiciousLogsAdapter : RecyclerView.Adapter<SuspiciousLogsAdapter.Suspici
             tvAppId.text = activity.appId
             tvDescription.text = activity.description
             tvRiskLevel.text = activity.riskLevel
+            cardScreenOff.visibility = if (activity.isScreenOff) android.view.View.VISIBLE else android.view.View.GONE
             
             val color = when(activity.riskLevel.lowercase()) {
                 "critical" -> "#F44336" // Red

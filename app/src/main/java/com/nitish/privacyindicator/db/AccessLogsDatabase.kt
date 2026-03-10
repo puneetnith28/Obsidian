@@ -10,7 +10,7 @@ import com.nitish.privacyindicator.models.SuspiciousActivity
 
 @Database(
         entities = [AccessLog::class, SuspiciousActivity::class],
-        version = 2
+        version = 3
 )
 @TypeConverters(Converters::class)
 abstract class AccessLogsDatabase: RoomDatabase() {

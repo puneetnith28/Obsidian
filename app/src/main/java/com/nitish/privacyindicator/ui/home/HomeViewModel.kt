@@ -23,6 +23,8 @@ class HomeViewModel(application: Application,
 
     val suspiciousDetectionStatus = MutableLiveData(sharedPrefManager.isSuspiciousDetectionEnabled)
 
+    val screenOffMonitoringStatus = MutableLiveData(sharedPrefManager.isScreenOffMonitoringEnabled)
+
 
     val indicatorForegroundColor = MutableLiveData(sharedPrefManager.indicatorColor)
 
@@ -62,6 +64,11 @@ class HomeViewModel(application: Application,
     fun setSuspiciousDetectionStatus(isEnabled: Boolean) {
         sharedPrefManager.setSuspiciousDetectionEnabled(isEnabled)
         suspiciousDetectionStatus.value = isEnabled
+    }
+
+    fun setScreenOffMonitoringStatus(isEnabled: Boolean) {
+        sharedPrefManager.setScreenOffMonitoringEnabled(isEnabled)
+        screenOffMonitoringStatus.value = isEnabled
     }
 
 

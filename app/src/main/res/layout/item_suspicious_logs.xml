@@ -26,6 +26,28 @@
             android:background="@color/colorAccent" />
     </androidx.cardview.widget.CardView>
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardScreenOff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:visibility="gone"
+        app:cardCornerRadius="8dp"
+        app:layout_constraintStart_toEndOf="@+id/cardRisk"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:text="Screen-Off"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="#607D8B" />
+    </androidx.cardview.widget.CardView>
+
     <LinearLayout
         android:id="@+id/timeLayout"
         android:layout_width="wrap_content"

@@ -42,4 +42,7 @@
 
     <string name="whitelist_title">Smart Whitelisting</string>
     <string name="whitelist_description">Select apps you trust to prevent them from triggering suspicious activity alerts.</string>
+
+    <string name="screen_off_monitoring_title">Screen-Off Monitoring</string>
+    <string name="screen_off_monitoring_description">Escalate alerts if sensors are accessed while the screen is off (Detect Spyware).</string>
 </resources>

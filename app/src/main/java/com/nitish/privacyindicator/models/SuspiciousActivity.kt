@@ -11,5 +11,6 @@ data class SuspiciousActivity(
     val appId: String,
     val appName: String,
     val description: String,
-    val riskLevel: String // High, Critical, Tracking
+    val riskLevel: String, // High, Critical, Tracking
+    val isScreenOff: Boolean = false
 )

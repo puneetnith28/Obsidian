@@ -71,6 +71,10 @@ class HomeActivity : AppCompatActivity() {
             serviceEnabledBinding.switchSuspicious.isChecked = it
         })
 
+        viewModel.screenOffMonitoringStatus.observe(this, {
+            serviceEnabledBinding.switchScreenOff.isChecked = it
+        })
+
 
         viewModel.vibrationAlertStatus.observe(this, {
             serviceEnabledBinding.switchVibration.isChecked = it
@@ -162,6 +166,10 @@ class HomeActivity : AppCompatActivity() {
 
         serviceEnabledBinding.switchSuspicious.setOnCheckedChangeListener { button, isEnabled ->
             viewModel.setSuspiciousDetectionStatus(isEnabled)
+        }
+
+        serviceEnabledBinding.switchScreenOff.setOnCheckedChangeListener { button, isEnabled ->
+            viewModel.setScreenOffMonitoringStatus(isEnabled)
         }
 
         serviceEnabledBinding.suspiciousText.setOnClickListener {
