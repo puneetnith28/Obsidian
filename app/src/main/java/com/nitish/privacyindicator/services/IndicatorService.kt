@@ -5,6 +5,8 @@ import android.accessibilityservice.AccessibilityService
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.Context
+import android.os.PowerManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -244,6 +246,19 @@ class IndicatorService : AccessibilityService() {
     private fun saveSuspiciousActivity(description: String, riskLevel: String) {
         val now = System.currentTimeMillis()
         if (sharedPrefManager.isAppWhitelisted(currentAppId)) return // Skip if whitelisted
+        
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        val isScreenOff = !powerManager.isInteractive
+        val monitoringEnabled = sharedPrefManager.isScreenOffMonitoringEnabled()
+        
+        var finalRiskLevel = riskLevel
+        var finalDescription = description
+        
+        if (isScreenOff && monitoringEnabled) {
+            finalRiskLevel = "Critical" // Escalate risk if screen is off
+            finalDescription = "[Screen-Off] $description"
+        }
+
         val key = "${currentAppId}_$description"
         val lastTime = lastSuspiciousLogTime[key] ?: 0L
         if (now - lastTime < 300000) return // Debounce 5 mins for same app/issue
@@ -252,8 +267,9 @@ class IndicatorService : AccessibilityService() {
             time = now,
             appId = currentAppId,
             appName = getAppName(currentAppId),
-            description = description,
-            riskLevel = riskLevel
+            description = finalDescription,
+            riskLevel = finalRiskLevel,
+            isScreenOff = isScreenOff
         )
         GlobalScope.launch(Dispatchers.IO) {
             accessLogsRepo.saveSuspiciousActivity(activity)
