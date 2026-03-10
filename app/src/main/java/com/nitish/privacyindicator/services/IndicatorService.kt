@@ -74,6 +74,7 @@ class IndicatorService : AccessibilityService() {
     private val lastLocationTimes = mutableMapOf<String, Long>()
     private val locationViolationCount = mutableMapOf<String, Int>()
     private val lastSuspiciousLogTime = mutableMapOf<String, Long>()
+    private val appInfoHandler = android.os.Handler(android.os.Looper.getMainLooper())
 
 
     override fun onCreate() {
@@ -138,6 +139,7 @@ class IndicatorService : AccessibilityService() {
                     triggerVibration()
                     showNotification()
                     checkCameraSuspicious()
+                    showAppInfoOnIndicator()
                 }
             }
         }
@@ -170,6 +172,7 @@ class IndicatorService : AccessibilityService() {
                         triggerVibration()
                         showNotification()
                         micStartTimes[currentAppId] = System.currentTimeMillis()
+                        showAppInfoOnIndicator()
                     }
                 } else {
                     if (isMicOn) {
@@ -208,6 +211,7 @@ class IndicatorService : AccessibilityService() {
                     triggerVibration()
                     showNotification()
                     checkLocationSuspicious()
+                    showAppInfoOnIndicator()
                 }
             }
 
@@ -241,6 +245,29 @@ class IndicatorService : AccessibilityService() {
             locationViolationCount[currentAppId] = 0
         }
         lastLocationTimes[currentAppId] = now
+    }
+
+    private fun showAppInfoOnIndicator() {
+        if (!sharedPrefManager.isShowAppInfoOnIndicator()) return
+        try {
+            val pm = packageManager
+            val appInfo = pm.getApplicationInfo(currentAppId, 0)
+            val appName = pm.getApplicationLabel(appInfo).toString()
+            val appIcon = pm.getApplicationIcon(appInfo)
+
+            binding.tvAppName.text = appName
+            binding.ivAppIcon.setImageDrawable(appIcon)
+            binding.tvAppName.visibility = View.VISIBLE
+            binding.ivAppIcon.visibility = View.VISIBLE
+
+            appInfoHandler.removeCallbacksAndMessages(null)
+            appInfoHandler.postDelayed({
+                binding.tvAppName.visibility = View.GONE
+                binding.ivAppIcon.visibility = View.GONE
+            }, 3000)
+        } catch (e: Exception) {
+            // Silently fail — don't disrupt indicator functionality
+        }
     }
 
     private fun saveSuspiciousActivity(description: String, riskLevel: String) {

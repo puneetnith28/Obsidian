@@ -25,6 +25,8 @@ class HomeViewModel(application: Application,
 
     val screenOffMonitoringStatus = MutableLiveData(sharedPrefManager.isScreenOffMonitoringEnabled)
 
+    val showAppInfoOnIndicatorStatus = MutableLiveData(sharedPrefManager.isShowAppInfoOnIndicator)
+
 
     val indicatorForegroundColor = MutableLiveData(sharedPrefManager.indicatorColor)
 
@@ -71,6 +73,10 @@ class HomeViewModel(application: Application,
         screenOffMonitoringStatus.value = isEnabled
     }
 
+    fun setShowAppInfoOnIndicatorStatus(isEnabled: Boolean) {
+        sharedPrefManager.setShowAppInfoOnIndicator(isEnabled)
+        showAppInfoOnIndicatorStatus.value = isEnabled
+    }
 
     fun setIndicatorForegroundColor(color: String) {
         sharedPrefManager.indicatorColor = color

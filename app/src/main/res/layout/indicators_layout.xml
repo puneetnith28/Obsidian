@@ -21,7 +21,34 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:background="@color/colorAccent">
+
+            <!-- App Icon shown briefly when sensor is triggered -->
+            <ImageView
+                android:id="@+id/iv_app_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="2dp"
+                android:visibility="gone"
+                android:scaleType="centerCrop"
+                tools:ignore="UseAppTint" />
+
+            <!-- App Name shown briefly when sensor is triggered -->
+            <TextView
+                android:id="@+id/tv_app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="120dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                android:paddingEnd="4dp"
+                android:visibility="gone"
+                tools:text="Camera" />
 
             <ImageView
                 android:id="@+id/iv_cam"
