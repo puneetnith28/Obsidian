@@ -243,6 +243,7 @@ class IndicatorService : AccessibilityService() {
 
     private fun saveSuspiciousActivity(description: String, riskLevel: String) {
         val now = System.currentTimeMillis()
+        if (sharedPrefManager.isAppWhitelisted(currentAppId)) return // Skip if whitelisted
         val key = "${currentAppId}_$description"
         val lastTime = lastSuspiciousLogTime[key] ?: 0L
         if (now - lastTime < 300000) return // Debounce 5 mins for same app/issue

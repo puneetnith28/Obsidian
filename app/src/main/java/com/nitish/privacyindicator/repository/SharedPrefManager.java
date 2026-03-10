@@ -3,6 +3,9 @@ package com.nitish.privacyindicator.repository;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.nitish.privacyindicator.BuildConfig;
 import com.nitish.privacyindicator.models.IndicatorOpacity;
 import com.nitish.privacyindicator.models.IndicatorPosition;
@@ -25,6 +28,7 @@ public class SharedPrefManager {
     private static final String MIC_COLOR = "MIC_COLOR";
     private static final String LOCATION_COLOR = "LOCATION_COLOR";
     private static final String SUSPICIOUS_DETECTION_ENABLED = "SUSPICIOUS_DETECTION_ENABLED";
+    private static final String WHITELISTED_APPS = "WHITELISTED_APPS";
 
     private static final String DEFAULT_INDICATOR_COLOR = "#3F51B5";
     private static final String DEFAULT_CAMERA_COLOR = "#E91E63"; // Rose
@@ -203,6 +207,26 @@ public class SharedPrefManager {
 
     public IndicatorPosition getIndicatorPosition() {
         return IndicatorPosition.valueOf(getString(context, INDICATOR_POSITION, DEFAULT_INDICATOR_POSITION));
+    }
+
+    public Set<String> getWhitelistedApps() {
+        return sharedPreferences.getStringSet(WHITELISTED_APPS, new HashSet<>());
+    }
+
+    public void addAppToWhitelist(String packageName) {
+        Set<String> whitelist = new HashSet<>(getWhitelistedApps());
+        whitelist.add(packageName);
+        sharedPreferences.edit().putStringSet(WHITELISTED_APPS, whitelist).apply();
+    }
+
+    public void removeAppFromWhitelist(String packageName) {
+        Set<String> whitelist = new HashSet<>(getWhitelistedApps());
+        whitelist.remove(packageName);
+        sharedPreferences.edit().putStringSet(WHITELISTED_APPS, whitelist).apply();
+    }
+
+    public boolean isAppWhitelisted(String packageName) {
+        return getWhitelistedApps().contains(packageName);
     }
 
 }
